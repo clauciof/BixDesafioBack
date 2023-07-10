@@ -8,7 +8,6 @@ from .models import User as PlatformUser
 import pickle
 import json
 
-
 def delete(request):
     if request.method == "POST":
         data = json.loads(request.body.decode("utf-8"))
@@ -60,18 +59,21 @@ def usuario(request):
             "status": 200
         }, safe=False)
 
-    # try:
-    #     if request.method == "GET":
-    #         users = list(PlatformUser.objects.values())
-    #         return JsonResponse(list(users), safe=False)
-    # except Exception as e:
-    #         return JsonResponse([], safe=False)
-                
-    # if request.user.is_authenticated:
-    #     u = User.objects.get(username=user.username)
-    #     return JsonResponse({authenticated: True})
-    # else:
-    #     return JsonResponse({authenticated: False})
+
+    if request.method == "GET":
+        data = request.GET.get("login")
+        print(data)
+        user = PlatformUser.objects.filter(login=data).values()
+        print( user[0])
+        return JsonResponse({
+            "message":"Retornado com sucesso",
+            "status": 200,
+            "user_name": user[0]['name'],
+            "user_login": user[0]['login'],
+            "user_entry": user[0]['entry'],
+            "user_out": user[0]['out'],
+            "user_holidays": user[0]['holidays'],
+        }, safe=False)
 
 def login(request):
     try:
@@ -92,8 +94,6 @@ def login(request):
                 return JsonResponse({'user': None, 'email': None, 'staff': False,  'authenticated': False})
     except Exception as e:
         return JsonResponse({'user': None, 'email': None, 'staff': False,  'authenticated': False})
-
-
 
 def auth(request):
     try:
